@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ICT2212 Quiz 1 - Revision</title>
+<style>
+  :root{
+    --bg:#0f1115; --bg2:#151922; --card:#1a1f2b; --line:#2a3143;
+    --fg:#e8ecf4; --muted:#8b96ad; --accent:#5b8def; --accent-soft:#5b8def22;
+    --ok:#2fbf71; --ok-bg:#2fbf7118; --bad:#ef5b6b; --bad-bg:#ef5b6b18;
+    --warn:#e0a13c; --warn-bg:#e0a13c18;
+    --radius:16px;
+  }
+  [data-theme="light"]{
+    --bg:#f6f7fb; --bg2:#ffffff; --card:#ffffff; --line:#e2e6ef;
+    --fg:#1a2033; --muted:#6b7488; --accent:#3b6fd4; --accent-soft:#3b6fd414;
+    --ok:#1f9e5b; --ok-bg:#1f9e5b14; --bad:#d43d4f; --bad-bg:#d43d4f14;
+    --warn:#b57b1e; --warn-bg:#b57b1e14;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; min-height:100vh; background:
+      radial-gradient(1100px 600px at 15% -10%, var(--accent-soft), transparent 60%),
+      linear-gradient(180deg, var(--bg), var(--bg2) 60%);
+    color:var(--fg);
+    font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:780px;margin:0 auto;padding:28px 20px 80px}
+  header{display:flex;align-items:flex-start;gap:16px;margin-bottom:6px}
+  h1{font-size:1.35rem;margin:0;letter-spacing:-.01em}
+  .sub{color:var(--muted);font-size:.86rem;margin-top:2px}
+  .theme{margin-left:auto;background:var(--card);border:1px solid var(--line);color:var(--fg);
+    border-radius:10px;padding:7px 11px;cursor:pointer;font-size:.85rem}
+  .theme:hover{border-color:var(--accent)}
+
+  .bar{height:6px;background:var(--line);border-radius:99px;overflow:hidden;margin:16px 0 10px}
+  .bar > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),#8f6bef);
+    border-radius:99px;transition:width .35s ease}
+
+  .stats{display:flex;gap:18px;color:var(--muted);font-size:.83rem;flex-wrap:wrap}
+  .stats b{color:var(--fg);font-weight:600}
+
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:18px 0 20px}
+  .seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:3px}
+  .seg button{background:transparent;border:0;color:var(--muted);padding:7px 14px;border-radius:8px;
+    cursor:pointer;font-size:.87rem;font-weight:500}
+  .seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
+  select,.btn{background:var(--card);border:1px solid var(--line);color:var(--fg);border-radius:11px;
+    padding:9px 12px;font-size:.87rem;cursor:pointer;font-family:inherit}
+  select:hover,.btn:hover{border-color:var(--accent)}
+  .btn.ghost{color:var(--muted)}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:26px;box-shadow:0 10px 30px #00000022}
+  .badges{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+  .pill{font-size:.71rem;letter-spacing:.04em;text-transform:uppercase;font-weight:600;
+    padding:3px 9px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
+  .pill.topic{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .pill.bonus{color:var(--warn);border-color:var(--warn);background:var(--warn-bg)}
+  .pill.flag{color:var(--warn);border-color:var(--warn);background:var(--warn-bg)}
+  .pill.n{color:var(--muted)}
+  .qtext{font-size:1.1rem;line-height:1.5;margin:0 0 20px;font-weight:550}
+
+  .opts{display:flex;flex-direction:column;gap:10px}
+  .opt{display:flex;gap:13px;align-items:flex-start;text-align:left;width:100%;
+    background:transparent;border:1px solid var(--line);color:var(--fg);
+    border-radius:12px;padding:13px 15px;cursor:pointer;font:inherit;line-height:1.45;
+    transition:border-color .15s,background .15s,transform .08s}
+  .opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-soft)}
+  .opt:active:not(:disabled){transform:scale(.995)}
+  .opt .key{flex:0 0 26px;height:26px;border-radius:7px;border:1px solid var(--line);
+    display:grid;place-items:center;font-size:.8rem;font-weight:700;color:var(--muted)}
+  .opt:disabled{cursor:default}
+  .opt.correct{border-color:var(--ok);background:var(--ok-bg)}
+  .opt.correct .key{border-color:var(--ok);color:var(--ok)}
+  .opt.wrong{border-color:var(--bad);background:var(--bad-bg)}
+  .opt.wrong .key{border-color:var(--bad);color:var(--bad)}
+  .opt.dim{opacity:.45}
+
+  textarea{width:100%;min-height:110px;background:var(--bg);border:1px solid var(--line);
+    color:var(--fg);border-radius:12px;padding:13px 15px;font:inherit;resize:vertical}
+  textarea:focus{outline:none;border-color:var(--accent)}
+
+  .fb{margin-top:18px;border-top:1px solid var(--line);padding-top:16px}
+  .verdict{font-weight:650;font-size:.95rem;margin-bottom:8px}
+  .verdict.ok{color:var(--ok)} .verdict.bad{color:var(--bad)} .verdict.self{color:var(--warn)}
+  .rat{color:var(--fg);opacity:.92;font-size:.94rem}
+  .src{margin-top:12px;font-size:.79rem;color:var(--muted);border-left:2px solid var(--line);
+    padding:2px 0 2px 11px;word-break:break-word}
+  .model{background:var(--ok-bg);border:1px solid var(--ok);border-radius:12px;padding:12px 14px;
+    font-size:.94rem;margin-bottom:12px}
+  .model b{color:var(--ok)}
+
+  .nav{display:flex;gap:10px;align-items:center;margin-top:20px}
+  .nav .spacer{flex:1}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .btn.primary:disabled{opacity:.4;cursor:not-allowed}
+
+  .summary{display:none;margin-top:22px}
+  .summary h2{font-size:1.05rem;margin:0 0 14px}
+  table{width:100%;border-collapse:collapse;font-size:.9rem}
+  th,td{text-align:left;padding:9px 6px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:600;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
+  td.num{text-align:right;font-variant-numeric:tabular-nums}
+  .scorebig{font-size:2.4rem;font-weight:700;letter-spacing:-.02em;line-height:1}
+  .scorable{color:var(--muted);font-size:.85rem;margin-top:4px}
+  .hint{color:var(--muted);font-size:.78rem;margin-top:14px}
+  kbd{background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:1px 5px;
+    font-size:.75rem;font-family:inherit}
+  .empty{color:var(--muted);text-align:center;padding:40px 10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <h1>ICT2212 &middot; Quiz 1 Revision</h1>
+      <div class="sub">60 questions &middot; Weeks 1&ndash;5 scope &middot; self-marked</div>
+    </div>
+    <button class="theme" id="themeBtn" title="Toggle theme">&#9788;</button>
+  </header>
+
+  <div class="bar"><i id="barFill"></i></div>
+  <div class="stats">
+    <span>Question <b id="pos">1</b> / <b id="total">60</b></span>
+    <span>Answered <b id="done">0</b></span>
+    <span>Score <b id="score">0%</b></span>
+    <span>Flagged <b id="flagCount">0</b></span>
+  </div>
+
+  <div class="toolbar">
+    <div class="seg" role="group">
+      <button id="modeMcq" aria-pressed="true">Multiple choice</button>
+      <button id="modeTyped" aria-pressed="false">Type answer</button>
+    </div>
+    <select id="topicSel"><option value="">All topics</option></select>
+    <button class="btn" id="shuffleBtn">Shuffle</button>
+    <button class="btn" id="wrongBtn">Retry wrong</button>
+    <button class="btn ghost" id="sumBtn">Summary</button>
+    <button class="btn ghost" id="resetBtn">Reset</button>
+  </div>
+
+  <div class="card" id="card"></div>
+
+  <div class="nav">
+    <button class="btn" id="prevBtn">&larr; Prev</button>
+    <button class="btn" id="flagBtn">Flag</button>
+    <div class="spacer"></div>
+    <button class="btn primary" id="nextBtn">Next &rarr;</button>
+  </div>
+
+  <div class="summary" id="summary"></div>
+
+  <div class="hint">
+    Keys: <kbd>A</kbd>&ndash;<kbd>D</kbd> or <kbd>1</kbd>&ndash;<kbd>4</kbd> to answer &middot;
+    <kbd>Enter</kbd> next &middot; <kbd>F</kbd> flag
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [{"id":1,"topic":"Introduction","bonus":false,"q":"An ethical hacker has finished reconnaissance and now uses the gathered information to examine the target's security posture more closely. Which process stage is this?","options":[{"letter":"A","text":"Scanning"},{"letter":"B","text":"Enumeration"},{"letter":"C","text":"Gaining Access"},{"letter":"D","text":"Maintaining Access"}],"answer":"A","rationale":"Scanning uses reconnaissance information to examine the target's security posture more closely.","source":"Brief §2, six-stage hacking process; source: Lecture 1 lines 148–280","flag":false},{"id":2,"topic":"Introduction","bonus":false,"q":"Which item should a penetration-test report not disclose according to the brief?","options":[{"letter":"A","text":"What security gaps were found"},{"letter":"B","text":"How the vulnerabilities can be closed"},{"letter":"C","text":"The exact methods used to discover the gaps"},{"letter":"D","text":"Steps the client should follow in future"}],"answer":"C","rationale":"The report states what gaps were found and how to plug them, not how the tester found them.","source":"Brief §2, penetration-test report; source: Lecture 1 lines 56–65","flag":false},{"id":3,"topic":"Introduction","bonus":false,"q":"Which penetration-testing model gives the tester network topology, technologies and other detailed information, and may allow interviews with IT staff?","options":[{"letter":"A","text":"Black box"},{"letter":"B","text":"Gray box"},{"letter":"C","text":"White box"},{"letter":"D","text":"Physical box"}],"answer":"C","rationale":"White-box testing provides detailed prior knowledge and may include interviews with IT staff.","source":"Brief §2, penetration-testing models; source: Lecture 1 lines 380–406","flag":false},{"id":4,"topic":"Introduction","bonus":false,"q":"Which penetration-testing model gives the tester no prior knowledge and can test whether security personnel detect the attack?","options":[{"letter":"A","text":"White box"},{"letter":"B","text":"Black box"},{"letter":"C","text":"Gray box"},{"letter":"D","text":"Focused box"}],"answer":"B","rationale":"Black-box testing gives no prior knowledge and can evaluate whether defenders detect the attack.","source":"Brief §2, penetration-testing models; source: Lecture 1 lines 380–406","flag":false},{"id":5,"topic":"Introduction","bonus":false,"q":"In the ethical-hacking process, what does Covering Tracks mean for an ethical hacker?","options":[{"letter":"A","text":"Preserving access for future exploitation"},{"letter":"B","text":"Performing cleanup to avoid leaving test artefacts"},{"letter":"C","text":"Identifying user and administrator accounts"},{"letter":"D","text":"Reporting the exact discovery method to the client"}],"answer":"B","rationale":"Covering Tracks means cleanup in an ethical-hacking engagement.","source":"Brief §2, six-stage hacking process; source: Lecture 1 lines 148–280","flag":false},{"id":6,"topic":"Introduction","bonus":false,"q":"Which statement correctly describes the security asymmetry taught in the lecture?","options":[{"letter":"A","text":"An attacker must know every weakness, while an administrator needs to know only one."},{"letter":"B","text":"An attacker and an administrator each need to know only one weakness."},{"letter":"C","text":"An attacker needs to know only one weakness, while an administrator must know all weaknesses for complete defence."},{"letter":"D","text":"An administrator can create an absolute defence by air-gapping every system."}],"answer":"C","rationale":"One weakness may be enough for an attacker, whereas complete defence requires the administrator to know all weaknesses.","source":"Brief §2, “The asymmetry”; source: Lecture 1 lines 86–123","flag":false},{"id":7,"topic":"Reconnaissance","bonus":false,"q":"In the lecturer's house analogy, which activity is equivalent to surveying the exterior of the chosen house?","options":[{"letter":"A","text":"Reconnaissance"},{"letter":"B","text":"Footprinting"},{"letter":"C","text":"Scanning"},{"letter":"D","text":"Enumeration"}],"answer":"B","rationale":"Footprinting surveys the exterior; reconnaissance chooses the house and scanning tests doors and windows.","source":"Brief §8, Reconnaissance / Footprinting / Scanning; §3; source: Lecture 2 lines 40–95","flag":false},{"id":8,"topic":"Reconnaissance","bonus":false,"q":"Which description correctly identifies a domain-name registry rather than a registrar?","options":[{"letter":"A","text":"It offers registration services and must earn ICANN accreditation."},{"letter":"B","text":"It holds the database of all registered names in a given TLD and operates under contract with ICANN."},{"letter":"C","text":"It translates a domain name into an IP address interactively."},{"letter":"D","text":"It stores historical snapshots of websites."}],"answer":"B","rationale":"A registry holds the TLD database under ICANN contract; a registrar offers registration services and needs accreditation.","source":"Brief §8, registrar vs registry; §3; source: Lecture 2 lines 98–240","flag":false},{"id":9,"topic":"Reconnaissance","bonus":false,"q":"In `singaporetech.edu.sg`, which portion is the top-level domain (TLD)?","options":[{"letter":"A","text":"`singaporetech`"},{"letter":"B","text":"`.edu`"},{"letter":"C","text":"`.edu.sg`"},{"letter":"D","text":"`.sg`"}],"answer":"D","rationale":"The TLD is the rightmost portion, `.sg`; the SLD is the next portion right-to-left.","source":"Brief §8, TLD vs SLD; §3, domain anatomy","flag":false},{"id":10,"topic":"Reconnaissance","bonus":false,"q":"An attacker invents a believable identity-verification scenario and builds sympathy and trust before asking for information. Which technique best fits?","options":[{"letter":"A","text":"Phishing"},{"letter":"B","text":"Pretexting"},{"letter":"C","text":"Baiting"},{"letter":"D","text":"Quid pro quo"}],"answer":"B","rationale":"Pretexting uses a fabricated scenario and false trust, unlike phishing's fear and urgency.","source":"Brief §8, Phishing vs pretexting; §3; source: Lecture 2 lines 470–590","flag":false},{"id":11,"topic":"Reconnaissance","bonus":false,"q":"An attacker drops a malware-loaded USB drive and relies on curiosity to make an employee use it. Which technique best fits?","options":[{"letter":"A","text":"Baiting"},{"letter":"B","text":"Quid pro quo"},{"letter":"C","text":"Pretexting"},{"letter":"D","text":"Tailgating"}],"answer":"A","rationale":"Baiting uses enticement and may use physical media such as a dropped malware-loaded USB drive.","source":"Brief §8, Baiting vs quid pro quo; §3; source: Lecture 2 lines 470–590","flag":false},{"id":12,"topic":"Reconnaissance","bonus":false,"q":"Which action is shoulder surfing, rather than tailgating?","options":[{"letter":"A","text":"Following an employee through a restricted door without authenticating"},{"letter":"B","text":"Starting a conversation to appear familiar at the front desk"},{"letter":"C","text":"Secretly observing a person's screen or keystrokes to obtain private information"},{"letter":"D","text":"Offering technical support in exchange for disabling antivirus software"}],"answer":"C","rationale":"Shoulder surfing visually observes information; tailgating follows an authorised person into a restricted area.","source":"Brief §8, Tailgating vs shoulder surfing; §3","flag":false},{"id":13,"topic":"Reconnaissance","bonus":false,"q":"Which statement best distinguishes Google hacking from hacking Google?","options":[{"letter":"A","text":"It attacks Google's servers using malformed search requests."},{"letter":"B","text":"It uses Google's search operators to locate information exposed by other misconfigured sites."},{"letter":"C","text":"It changes Google's index so private pages become public."},{"letter":"D","text":"It is another name for searching internet-connected devices with Shodan."}],"answer":"B","rationale":"Google hacking uses search operators to find exposed information on other sites; it does not attack Google.","source":"Brief §8, Google hacking vs hacking Google; §3; source: Lecture 2 lines 619–763","flag":false},{"id":14,"topic":"Reconnaissance","bonus":false,"q":"Which statement correctly distinguishes a Google dork from the Google Hacking Database (GHDB)?","options":[{"letter":"A","text":"A dork is a query; the GHDB is a database of such queries."},{"letter":"B","text":"A dork is a database; the GHDB is one query selected from it."},{"letter":"C","text":"A dork searches devices; the GHDB stores historical website snapshots."},{"letter":"D","text":"A dork is active reconnaissance; the GHDB is a port scanner."}],"answer":"A","rationale":"A dork is the search query, while the GHDB is a database of dorks.","source":"Brief §8, Dork vs GHDB; §3","flag":false},{"id":15,"topic":"Reconnaissance","bonus":false,"q":"Which pairing is correct?","options":[{"letter":"A","text":"Wayback Machine — search engine for internet-connected devices; Shodan — historical website snapshots"},{"letter":"B","text":"Wayback Machine — historical website snapshots; Shodan — search engine for internet-connected devices"},{"letter":"C","text":"Wayback Machine — graphical link analysis; Shodan — DNS record lookup"},{"letter":"D","text":"Wayback Machine — vulnerability scanner; Shodan — domain registrar"}],"answer":"B","rationale":"Wayback stores historical website snapshots; Shodan searches for internet-connected devices.","source":"Brief §8, Wayback Machine vs Shodan; §3; source: Lecture 2 lines 775–902","flag":false},{"id":16,"topic":"Scanning & Enumeration","bonus":false,"q":"Which statement correctly distinguishes a ping sweep from a port scan?","options":[{"letter":"A","text":"A ping sweep finds open services; a port scan only determines whether a host is alive."},{"letter":"B","text":"A ping sweep determines whether hosts are alive; a port scan identifies open, closed or filtered ports."},{"letter":"C","text":"A ping sweep enumerates user accounts; a port scan discovers domain registrants."},{"letter":"D","text":"A ping sweep and a port scan always perform the same probes."}],"answer":"B","rationale":"A ping sweep asks whether hosts are alive; a port scan classifies ports as open, closed or filtered.","source":"Brief §8, Ping sweep vs port scan; §4","flag":false},{"id":17,"topic":"Scanning & Enumeration","bonus":false,"q":"Which ICMP type pairing is correct for an echo exchange?","options":[{"letter":"A","text":"Echo Request Type 0; Echo Reply Type 8"},{"letter":"B","text":"Echo Request Type 8; Echo Reply Type 0"},{"letter":"C","text":"Echo Request Type 13; Echo Reply Type 14"},{"letter":"D","text":"Echo Request Type 14; Echo Reply Type 13"}],"answer":"B","rationale":"ICMP Echo Request is Type 8 and Echo Reply is Type 0.","source":"Brief §§4, 7 and 8; source: Lecture 3 lines 230–266","flag":false},{"id":18,"topic":"Scanning & Enumeration","bonus":false,"q":"When ordinary ICMP echo requests are blocked, which ICMP timestamp pairing can be used as a non-echo alternative?","options":[{"letter":"A","text":"Request Type 0; Reply Type 8"},{"letter":"B","text":"Request Type 8; Reply Type 0"},{"letter":"C","text":"Request Type 13; Reply Type 14"},{"letter":"D","text":"Request Type 14; Reply Type 13"}],"answer":"C","rationale":"ICMP Timestamp Request is Type 13 and Timestamp Reply is Type 14 under RFC 792.","source":"Brief §§4, 7 and 8; source: Lecture 3 lines 247–300","flag":false},{"id":19,"topic":"Scanning & Enumeration","bonus":false,"q":"Which nmap flag performs host discovery as a ping sweep without scanning ports?","options":[{"letter":"A","text":"`-sn`"},{"letter":"B","text":"`-PE`"},{"letter":"C","text":"`-PP`"},{"letter":"D","text":"`-Pn`"}],"answer":"A","rationale":"`-sn` performs a ping sweep only and does not scan ports.","source":"Brief §§4, 7 and 8, `-sn` vs `-PE` vs `-PP`; source: Lecture 3 lines 208–334","flag":false},{"id":20,"topic":"Scanning & Enumeration","bonus":false,"q":"Which nmap flag requests an ICMP non-echo timestamp sweep with a port scan?","options":[{"letter":"A","text":"`-sn`"},{"letter":"B","text":"`-PE`"},{"letter":"C","text":"`-PP`"},{"letter":"D","text":"`-Pn`"}],"answer":"C","rationale":"`-PP` performs the non-echo timestamp sweep with a port scan.","source":"Brief §§4, 7 and 8, `-sn` vs `-PE` vs `-PP`; source: Lecture 3 lines 208–334","flag":false},{"id":21,"topic":"Scanning & Enumeration","bonus":false,"q":"Which statement correctly contrasts TCP and UDP sweeps as presented in the lecture?","options":[{"letter":"A","text":"TCP is connection-oriented and generally easier to determine; UDP is connectionless and more difficult."},{"letter":"B","text":"TCP is connectionless and usually slower; UDP is connection-oriented and usually faster."},{"letter":"C","text":"TCP relies on ICMP Port Unreachable for closed ports; UDP relies on SYN ACK."},{"letter":"D","text":"TCP uses `-sU`; UDP uses `-sT` or `-sS`."}],"answer":"A","rationale":"TCP is connection-oriented and generally easier to determine; UDP is connectionless and more difficult.","source":"Brief §8, TCP sweep vs UDP sweep; §4; source: Lecture 3 lines 539–603","flag":false},{"id":22,"topic":"Scanning & Enumeration","bonus":false,"q":"A SYN probe produces no response from the remote host after retransmissions. How is the port classified in the brief?","options":[{"letter":"A","text":"Open"},{"letter":"B","text":"Closed"},{"letter":"C","text":"Filtered"},{"letter":"D","text":"Enumerated"}],"answer":"C","rationale":"In the stated port-scan model, no response indicates a filtered port.","source":"Brief §8, Open vs closed vs filtered; §4; source: Lecture 3 lines 680–723","flag":false},{"id":23,"topic":"Scanning & Enumeration","bonus":false,"q":"Which scan completes the full three-way handshake, requires no special privileges, and is noisy and easily detected?","options":[{"letter":"A","text":"TCP Connect() scan (`-sT`)"},{"letter":"B","text":"TCP SYN scan (`-sS`)"},{"letter":"C","text":"TCP FIN scan (`-sF`)"},{"letter":"D","text":"UDP scan (`-sU`)"}],"answer":"A","rationale":"TCP Connect (`-sT`) completes the handshake, needs no special privileges and is noisy.","source":"Brief §8, Connect vs SYN vs FIN; §4; source: Lecture 3 lines 727–749","flag":false},{"id":24,"topic":"Scanning & Enumeration","bonus":false,"q":"Which scan sends SYN, receives SYN ACK for an open port, then tears down the connection with RST before completing the handshake?","options":[{"letter":"A","text":"TCP Connect() scan (`-sT`)"},{"letter":"B","text":"TCP SYN / half-open scan (`-sS`)"},{"letter":"C","text":"TCP FIN scan (`-sF`)"},{"letter":"D","text":"UDP scan (`-sU`)"}],"answer":"B","rationale":"A SYN or half-open scan (`-sS`) tears down with RST before completing the handshake.","source":"Brief §8, Connect vs SYN vs FIN; §4; source: Lecture 3 lines 753–776","flag":false},{"id":25,"topic":"Scanning & Enumeration","bonus":false,"q":"Which scan is fast and stealthy but cannot distinguish an open port from a filtered port because both may give no response?","options":[{"letter":"A","text":"TCP Connect() scan (`-sT`)"},{"letter":"B","text":"TCP SYN scan (`-sS`)"},{"letter":"C","text":"TCP FIN scan (`-sF`)"},{"letter":"D","text":"UDP scan (`-sU`)"}],"answer":"C","rationale":"A FIN scan (`-sF`) gets no response from both open and filtered ports, so it cannot distinguish them.","source":"Brief §8, Connect vs SYN vs FIN; §4; source: Lecture 3 lines 780–810","flag":false},{"id":26,"topic":"Scanning & Enumeration","bonus":false,"q":"Which route-tracing tool pairing is correct?","options":[{"letter":"A","text":"Linux/Unix: `tracert`; Windows: `traceroute`"},{"letter":"B","text":"Linux/Unix: `traceroute`; Windows: `tracert`"},{"letter":"C","text":"Linux/Unix: `nslookup`; Windows: `dig`"},{"letter":"D","text":"Linux/Unix: `fping`; Windows: `dnsmap`"}],"answer":"B","rationale":"`traceroute` is the Linux/Unix tool and `tracert` is the Windows tool.","source":"Brief §8, traceroute vs tracert; §4; source: Lecture 3 lines 946–1005","flag":false},{"id":27,"topic":"Scanning & Enumeration","bonus":false,"q":"Which statement correctly distinguishes enumeration from scanning?","options":[{"letter":"A","text":"Enumeration is passive and only determines whether a host is alive."},{"letter":"B","text":"Enumeration is more intrusive, using active connections to extract shares and user-account information."},{"letter":"C","text":"Scanning extracts shares and user accounts, while enumeration only identifies open ports."},{"letter":"D","text":"Scanning and enumeration are identical names for passive Google searches."}],"answer":"B","rationale":"Enumeration is more intrusive because it queries through active connections to extract shares and user-account information.","source":"Brief §8, Scanning vs enumeration; §4; source: Lecture 3 lines 1014–1167","flag":false},{"id":28,"topic":"Scanning & Enumeration","bonus":false,"q":"In `nmap -sV -v -n -Pn --script banner <ip>`, which flag skips the initial ping test because modern firewalls may block ICMP requests?","options":[{"letter":"A","text":"`-sV`"},{"letter":"B","text":"`-n`"},{"letter":"C","text":"`-Pn`"},{"letter":"D","text":"`-v`"}],"answer":"C","rationale":"`-Pn` skips the initial ping test; `-n` disables reverse DNS and `-sV` detects service versions.","source":"Brief §§4 and 7, banner-grabbing command; source: Lecture 3 lines 1014–1167","flag":false},{"id":29,"topic":"Gain Access / System Hacking","bonus":false,"q":"Which configuration has the smaller attack surface?","options":[{"letter":"A","text":"A feature runs by default."},{"letter":"B","text":"A service accepts anonymous access."},{"letter":"C","text":"Code runs as administrator or root."},{"letter":"D","text":"A network endpoint is restricted to a subnet or LAN."}],"answer":"D","rationale":"Restricting an endpoint to a subnet or LAN produces a smaller attack surface than internet exposure and the other listed broad-access choices.","source":"Brief §8, Larger vs smaller attack surface; §5; source: Lecture 5 lines 69–131","flag":false},{"id":30,"topic":"Gain Access / System Hacking","bonus":false,"q":"Which control reduces damage potential by granting higher permissions only for as long as needed?","options":[{"letter":"A","text":"Authentication"},{"letter":"B","text":"Authorisation"},{"letter":"C","text":"Anonymous access"},{"letter":"D","text":"Increasing the number of entry-point URLs"}],"answer":"B","rationale":"Authorisation limits privilege and damage potential; authentication controls who may enter.","source":"Brief §5, attack-surface reduction; source: Lecture 5 lines 69–131","flag":false},{"id":31,"topic":"Gain Access / System Hacking","bonus":false,"q":"In the attack-surface model, which resource is a channel rather than a method or data item?","options":[{"letter":"A","text":"An entry or exit point"},{"letter":"B","text":"A port, RPC or web service"},{"letter":"C","text":"A file, cookie or registry entry"},{"letter":"D","text":"A direct method's privilege level"}],"answer":"B","rationale":"Channels include ports, RPCs and web services; methods are entry/exit points and data items include files, cookies and registry entries.","source":"Brief §8, Method vs channel vs data item; §5; source: Lecture 5 lines 149–198","flag":false},{"id":32,"topic":"Gain Access / System Hacking","bonus":false,"q":"Which statement correctly distinguishes salting from hashing?","options":[{"letter":"A","text":"Hashing adds random data; salting reverses the resulting digest."},{"letter":"B","text":"Hashing is one-way; salting adds random data before hashing so the same password can produce different values at different sites."},{"letter":"C","text":"Hashing stores plaintext; salting encrypts it with a reusable key."},{"letter":"D","text":"Hashing and salting are two names for pre-computing rainbow tables."}],"answer":"B","rationale":"Hashing is one-way; salting adds random data before hashing so identical strings can hash differently.","source":"Brief §8, Salting vs hashing; §5; source: Lecture 5 lines 348–397","flag":false},{"id":33,"topic":"Gain Access / System Hacking","bonus":false,"q":"Which statement correctly contrasts LM and NTLM?","options":[{"letter":"A","text":"LM uses MD4 and Unicode; NTLM splits the password into two upper-case 7-character strings and applies DES."},{"letter":"B","text":"LM is salted; NTLM is unsalted."},{"letter":"C","text":"LM splits the password into two upper-case 7-character strings and applies DES; NTLM uses MD4 and Unicode. Both are unsalted."},{"letter":"D","text":"LM and NTLM both use SHA-256 and 32-byte hashes."}],"answer":"C","rationale":"LM uses upper-case 7+7 character halves and DES; NTLM uses MD4 and Unicode; both are unsalted.","source":"Brief §§5, 7 and 8, LM vs NTLM; source: Lecture 5 lines 419–455","flag":false},{"id":34,"topic":"Gain Access / System Hacking","bonus":false,"q":"Which hash-size statement matches the brief exactly?","options":[{"letter":"A","text":"SHA-1 is 128-bit; SHA-256 is 256-bit (16 bytes)."},{"letter":"B","text":"SHA-1 is 160-bit; SHA-256 is 256-bit (32 bytes)."},{"letter":"C","text":"SHA-1 is 256-bit; SHA-256 is 160-bit (32 bytes)."},{"letter":"D","text":"SHA-1 is 160-bit; SHA-256 is 512-bit (64 bytes)."}],"answer":"B","rationale":"SHA-1 is 160-bit, while SHA-256 produces a 256-bit or 32-byte hash.","source":"Brief §§5 and 7; source: Lecture 5 lines 464–478","flag":false},{"id":35,"topic":"Gain Access / System Hacking","bonus":false,"q":"Which password attack uses dictionary words and their variations, followed by brute force?","options":[{"letter":"A","text":"Dictionary attack"},{"letter":"B","text":"Brute-force attack"},{"letter":"C","text":"Hybrid attack"},{"letter":"D","text":"Rainbow-tables attack"}],"answer":"C","rationale":"A hybrid attack tries dictionary words and variations, then brute force.","source":"Brief §8, password-attack distinctions; §5; source: Lecture 5 lines 533–564","flag":false},{"id":36,"topic":"Gain Access / System Hacking","bonus":false,"q":"Which password attack relies on lists of pre-computed hashes?","options":[{"letter":"A","text":"Dictionary attack"},{"letter":"B","text":"Brute-force attack"},{"letter":"C","text":"Hybrid attack"},{"letter":"D","text":"Rainbow-tables attack"}],"answer":"D","rationale":"Rainbow-tables attacks use lists of pre-computed hashes.","source":"Brief §8, password-attack distinctions; §5; source: Lecture 5 lines 533–564","flag":false},{"id":37,"topic":"Gain Access / System Hacking","bonus":false,"q":"Which tool is specifically described as a password cracker based on rainbow tables?","options":[{"letter":"A","text":"PwDump"},{"letter":"B","text":"John the Ripper"},{"letter":"C","text":"Ophcrack"},{"letter":"D","text":"THC Hydra"}],"answer":"C","rationale":"Ophcrack is specifically identified as a rainbow-table-based password cracker.","source":"Brief §5, password-cracking tools; source: Lecture 5 lines 643–717","flag":false},{"id":38,"topic":"Gain Access / System Hacking","bonus":false,"q":"What is the correct first comparison workflow for Microsoft Attack Surface Analyzer 2.0?","options":[{"letter":"A","text":"Install the target app, remove all baseline data, then run one scan."},{"letter":"B","text":"Run a baseline scan, install the target app, run another scan, then compare the results."},{"letter":"C","text":"Run a password dictionary attack, install the target app, then compare hashes."},{"letter":"D","text":"Enumerate remote user accounts, uninstall the target app, then compare network routes."}],"answer":"B","rationale":"The Analyzer workflow is baseline scan, install the app, scan again and compare against the baseline.","source":"Brief §5, Microsoft Attack Surface Analyzer; source: Lecture 5 lines 307–341","flag":false},{"id":39,"topic":"Sniffing (bonus)","bonus":true,"q":"BONUS: Which statement correctly distinguishes passive from active sniffing?","options":[{"letter":"A","text":"Passive sniffing injects packets to bypass switch segmentation; active sniffing only listens on a hub."},{"letter":"B","text":"Passive sniffing relies on promiscuous mode and works well on hubs; active sniffing can use ARP spoofing to bypass switch segmentation."},{"letter":"C","text":"Passive sniffing requires ARP poisoning; active sniffing cannot modify network traffic."},{"letter":"D","text":"Passive and active sniffing both work only when the NIC rejects promiscuous mode."}],"answer":"B","rationale":"Passive sniffing listens in promiscuous mode on hubs; active sniffing such as ARP spoofing bypasses switch segmentation.","source":"Brief §§6 and 8, Passive vs active sniffing; source: Lecture 4 lines 41–105","flag":false},{"id":40,"topic":"Sniffing (bonus)","bonus":true,"q":"BONUS: Which control-to-threat mapping matches the lecture?","options":[{"letter":"A","text":"Encryption — replay; hashing — privacy; timestamp — integrity"},{"letter":"B","text":"Encryption — integrity; hashing — replay; timestamp — privacy"},{"letter":"C","text":"Encryption — privacy; hashing — integrity; timestamp — replay"},{"letter":"D","text":"Encryption — birthday attacks; hashing — privacy; timestamp — key management"}],"answer":"C","rationale":"Encryption protects privacy, hashing protects integrity, and timestamps defend against replay attacks.","source":"Brief §§6 and 8, Encryption vs hashing vs timestamp; source: Lecture 4 lines 110–148","flag":false},{"id":41,"topic":"Introduction","bonus":false,"q":"What is the defining characteristic of an ethical hacker compared to a malicious attacker?","options":[{"letter":"A","text":"They use different tools"},{"letter":"B","text":"They operate with permission and professional intent, and their attacks are non-destructive"},{"letter":"C","text":"They only test their own systems"},{"letter":"D","text":"They report vulnerabilities to software vendors"}],"answer":"B","rationale":"Ethical hackers operate with permission/professional intent and attacks are non-destructive","source":"§2 — EH definition","flag":false},{"id":42,"topic":"Introduction","bonus":false,"q":"Based on the Coverity scan estimate of under 1 bug per 1,000 lines of code, approximately how many bugs might Windows 7 contain?","options":[{"letter":"A","text":"4,000"},{"letter":"B","text":"40,000"},{"letter":"C","text":"400,000"},{"letter":"D","text":"10,000"}],"answer":"B","rationale":"40–50M LOC × <1 bug/1,000 lines ≈ 40,000 bugs","source":"§2 — Defence feasibility","flag":false},{"id":43,"topic":"Introduction","bonus":false,"q":"What is the correct order of the first four stages in the ethical hacking process?","options":[{"letter":"A","text":"Scanning → Reconnaissance → Enumeration → Gaining Access"},{"letter":"B","text":"Reconnaissance → Scanning → Enumeration → Gaining Access"},{"letter":"C","text":"Reconnaissance → Enumeration → Scanning → Gaining Access"},{"letter":"D","text":"Enumeration → Reconnaissance → Scanning → Gaining Access"}],"answer":"B","rationale":"Correct sequence: Reconnaissance → Scanning → Enumeration → Gaining Access","source":"§2 — 6-stage process","flag":false},{"id":44,"topic":"Introduction","bonus":false,"q":"Which of the following is NOT listed as a pentester requirement in the brief?","options":[{"letter":"A","text":"Knowledge of computer and network technologies"},{"letter":"B","text":"Awareness of the laws"},{"letter":"C","text":"Ability to communicate with management and IT personnel"},{"letter":"D","text":"Certification from a recognised body (e.g. CREST)"}],"answer":"D","rationale":"Pentester requirements: knowledge, tools, communication, law awareness — no certification listed","source":"§2 — Pentester requirements","flag":true},{"id":45,"topic":"Reconnaissance","bonus":false,"q":"In the lecturer's house analogy, reconnaissance answers which question?","options":[{"letter":"A","text":"Surveying the house exterior"},{"letter":"B","text":"Finding which doors and windows are open or closed"},{"letter":"C","text":"Deciding which house you are robbing"},{"letter":"D","text":"Entering the house"}],"answer":"C","rationale":"Reconnaissance = \"which house?\" (footprinting = survey exterior; scanning = doors/windows)","source":"§3 — Lecturer's analogy; §8 trap","flag":false},{"id":46,"topic":"Reconnaissance","bonus":false,"q":"WHOIS uses which protocol, transport, and port?","options":[{"letter":"A","text":"UDP, port 43"},{"letter":"B","text":"TCP, port 43"},{"letter":"C","text":"TCP, port 53"},{"letter":"D","text":"UDP, port 53"}],"answer":"B","rationale":"WHOIS = TCP-based, port 43","source":"§3 — Whois protocol detail","flag":false},{"id":47,"topic":"Reconnaissance","bonus":false,"q":"A registrar wanting to offer domain registration services must earn accreditation from which body?","options":[{"letter":"A","text":"Verisign"},{"letter":"B","text":"InterNIC"},{"letter":"C","text":"ICANN"},{"letter":"D","text":"IETF"}],"answer":"C","rationale":"Registrars must earn ICANN accreditation","source":"§3 — Whois: registrar/registry","flag":false},{"id":48,"topic":"Reconnaissance","bonus":false,"q":"Which DNS record type maps a domain name to its IP address?","options":[{"letter":"A","text":"MX"},{"letter":"B","text":"NS"},{"letter":"C","text":"A"},{"letter":"D","text":"SOA"}],"answer":"C","rationale":"A record = Address Mapping (domain → IP)","source":"§3 — DNS records table","flag":false},{"id":49,"topic":"Reconnaissance","bonus":false,"q":"In Google hacking, which advanced operator restricts results to pages containing a term in the URL?","options":[{"letter":"A","text":"`intext:`"},{"letter":"B","text":"`allintitle:`"},{"letter":"C","text":"`inurl:`"},{"letter":"D","text":"`related:`"}],"answer":"C","rationale":"`inurl:` restricts results to pages with the term in the URL","source":"§3 — Advanced operators table","flag":false},{"id":50,"topic":"Scanning & Enumeration","bonus":false,"q":"In the lecturer's house analogy, what does scanning reveal?","options":[{"letter":"A","text":"Which house to rob"},{"letter":"B","text":"What the house exterior looks like"},{"letter":"C","text":"Which doors and windows are open or closed"},{"letter":"D","text":"Who lives in the house"}],"answer":"C","rationale":"Scanning = \"which doors and windows are open or closed?\"","source":"§4 — Three-way analogy; §8 trap","flag":false},{"id":51,"topic":"Scanning & Enumeration","bonus":false,"q":"During a TCP sweep, the attacker sends a SYN packet and receives RST ACK. What does this indicate?","options":[{"letter":"A","text":"The port is open"},{"letter":"B","text":"The port is closed"},{"letter":"C","text":"The port is filtered"},{"letter":"D","text":"The host is unreachable"}],"answer":"B","rationale":"SYN → RST ACK = port closed (SYN ACK = open, no response = filtered)","source":"§4 — TCP sweeps","flag":false},{"id":52,"topic":"Scanning & Enumeration","bonus":false,"q":"A decoy scan (`nmap -D`) requires which condition to be effective?","options":[{"letter":"A","text":"All decoy addresses must be real machines"},{"letter":"B","text":"At least one of the addresses must be the attacker's real address"},{"letter":"C","text":"The target must not be behind a firewall"},{"letter":"D","text":"All decoys must be offline"}],"answer":"B","rationale":"One decoy address must be real or the target's responses won't be received","source":"§4 — Decoy scan","flag":false},{"id":53,"topic":"Scanning & Enumeration","bonus":false,"q":"In `tracert` output, what do columns 2–4 represent?","options":[{"letter":"A","text":"Hop numbers for three different routes"},{"letter":"B","text":"Round-trip time for the 1st, 2nd, and 3rd probe packets"},{"letter":"C","text":"Source IP, destination IP, and gateway IP"},{"letter":"D","text":"TTL values for three retries"}],"answer":"B","rationale":"Col 1 = hop number; cols 2–4 = RTT for 1st/2nd/3rd probe packets; col 5 = host/router","source":"§4 — tracert output","flag":false},{"id":54,"topic":"Scanning & Enumeration","bonus":false,"q":"An \"intense scan\" in nmap uses which flag combination?","options":[{"letter":"A","text":"`-sS -sU -v`"},{"letter":"B","text":"`-T4 -A -v`"},{"letter":"C","text":"`-sV -O -n`"},{"letter":"D","text":"`-sn -PE -PP`"}],"answer":"B","rationale":"Intense scan = `nmap -T4 -A -v` (aggressive timing + OS/version/scripts/traceroute + verbose)","source":"§4 — Intense scan","flag":false},{"id":55,"topic":"Scanning & Enumeration","bonus":false,"q":"Per the brief, which RFC covers the TCP specification defining how open, closed, and filtered ports must respond?","options":[{"letter":"A","text":"RFC 768"},{"letter":"B","text":"RFC 792"},{"letter":"C","text":"RFC 793"},{"letter":"D","text":"RFC 1122"}],"answer":"C","rationale":"RFC 793 = TCP spec (open→ACK, closed→RST, filtered→ignore)","source":"§4 — RFC table; §7","flag":false},{"id":56,"topic":"Gain Access / System Hacking","bonus":false,"q":"In the attack surface measurement model, what does a Method's damage potential depend on?","options":[{"letter":"A","text":"The method's protocol"},{"letter":"B","text":"The method's privilege"},{"letter":"C","text":"The persistent data type"},{"letter":"D","text":"The number of open channels"}],"answer":"B","rationale":"Method damage potential = the method's privilege (channel = protocol; data item = persistent type)","source":"§5 — Damage potential table; §8 trap","flag":false},{"id":57,"topic":"Gain Access / System Hacking","bonus":false,"q":"In the IMAP server worked example, Courier: `<417.67, 2.25, 72.13>` vs Cyrus: `<343.00, 3.25, 66.5>`. If the main concern is privilege escalation on the host, which server should you choose and why?","options":[{"letter":"A","text":"Courier, because it has fewer channels"},{"letter":"B","text":"Cyrus, because it has a smaller methods DER"},{"letter":"C","text":"Courier, because it has more data items"},{"letter":"D","text":"Cyrus, because it has fewer data items"}],"answer":"B","rationale":"Cyrus methods DER 343.00 < Courier 417.67; methods dimension dominates for privilege escalation concerns","source":"§5 — IMAP worked example","flag":false},{"id":58,"topic":"Gain Access / System Hacking","bonus":false,"q":"In the password system described in the brief, what is compared at login?","options":[{"letter":"A","text":"The plaintext password with the stored plaintext"},{"letter":"B","text":"The hashed password with the stored hash"},{"letter":"C","text":"The salt with the hash"},{"letter":"D","text":"The username with the password"}],"answer":"B","rationale":"The hashed password is compared with the stored hash (salt added before hashing)","source":"§5 — Password system flow","flag":false},{"id":59,"topic":"Gain Access / System Hacking","bonus":false,"q":"THC Hydra is best described as:","options":[{"letter":"A","text":"A rainbow-table-based password cracker"},{"letter":"B","text":"A parallelised network login cracker that performs brute-force attacks to guess username/password combinations"},{"letter":"C","text":"A Windows security auditing tool"},{"letter":"D","text":"A hash lookup tool similar to Ophcrack"}],"answer":"B","rationale":"THC Hydra = parallelised network login cracker, brute-force username/password combos, non-hashed","source":"§5 — THC Hydra","flag":false},{"id":60,"topic":"Sniffing (bonus)","bonus":true,"q":"Why is ARP vulnerable to spoofing?","options":[{"letter":"A","text":"ARP uses weak encryption"},{"letter":"B","text":"ARP is a stateless protocol with no authentication — requests and replies can be forged"},{"letter":"C","text":"ARP runs on TCP port 80"},{"letter":"D","text":"ARP cache entries are permanent"}],"answer":"B","rationale":"ARP is stateless and unauthenticated — requests/replies can be forged","source":"§6 — ARP weakness; §8 trap","flag":false}];
+const KEY = "ict2212-quiz1-v1";
+
+const el = id => document.getElementById(id);
+let st = {
+  idx: 0, mode: "mcq", topic: "", shuffled: false,
+  results: {}, picks: {}, flagged: [], revealed: [], theme: "dark", typed: {}, retryIds: [], retry: false
+};
+
+function load(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(raw){ const s = JSON.parse(raw); st = Object.assign(st, s); }
+  }catch(e){}
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} }
+
+function pool(){
+  let p = QUESTIONS.slice();
+  if(st.retry && st.retryIds.length) p = p.filter(q => st.retryIds.includes(q.id));
+  else if(st.topic) p = p.filter(q => q.topic === st.topic);
+  if(st.shuffled) p = p.map(q => [Math.random(), q]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+  return p;
+}
+function current(){ const p = pool(); return p[Math.min(st.idx, p.length-1)]; }
+
+function displayOptions(q){
+  let o = q.options.slice();
+  if(st.shuffled) o = o.map(x => [Math.random(), x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+  return o;
+}
+const LETTERS = ["A","B","C","D"];
+
+function render(){
+  const p = pool();
+  if(st.idx >= p.length) st.idx = Math.max(0, p.length-1);
+  const q = current();
+  el("total").textContent = p.length;
+  el("pos").textContent = p.length ? st.idx+1 : 0;
+
+  const answered = Object.keys(st.results).length;
+  const right = Object.values(st.results).filter(v=>v==="right").length;
+  el("done").textContent = answered + "/" + QUESTIONS.length;
+  el("score").textContent = answered ? Math.round(right/answered*100) + "%" : "\u2014";
+  el("flagCount").textContent = st.flagged.length;
+  el("barFill").style.width = (answered/QUESTIONS.length*100) + "%";
+
+  if(!q){ el("card").innerHTML = '<div class="empty">No questions in this filter.</div>'; return; }
+
+  const res = st.results[q.id];
+  const badges = [
+    '<span class="pill topic">'+esc(q.topic)+'</span>',
+    '<span class="pill n">Q'+q.id+'</span>'
+  ];
+  if(q.bonus) badges.push('<span class="pill bonus">bonus</span>');
+  if(q.flag)  badges.push('<span class="pill flag">verify</span>');
+  if(st.flagged.includes(q.id)) badges.push('<span class="pill flag">flagged</span>');
+
+  let body = "";
+  if(st.mode === "mcq"){
+    const opts = displayOptions(q);
+    body = '<div class="opts">' + opts.map((o,i) => {
+      let cls = "opt";
+      if(res){
+        const picked = (st.picks || {})[q.id];
+        if(o.letter === q.answer) cls += " correct";
+        else if(picked === o.letter) cls += " wrong";
+        else cls += " dim";
+      }
+      return '<button class="'+cls+'" data-letter="'+o.letter+'" '+(res?"disabled":"")+'>'+
+             '<span class="key">'+LETTERS[i]+'</span><span>'+esc(o.text)+'</span></button>';
+    }).join("") + '</div>';
+  } else {
+    const shown = st.revealed.includes(q.id);
+    body = '<textarea id="typedBox" placeholder="Type your answer, then reveal..." '+
+           (shown?"disabled":"")+'>'+esc(st.typed[q.id]||"")+'</textarea>'+
+           '<div class="nav"><div class="spacer"></div>'+
+           (shown ? "" : '<button class="btn primary" id="revealBtn">Reveal answer</button>')+
+           '</div>';
+    if(shown){
+      const correct = q.options.find(o=>o.letter===q.answer);
+      body += '<div class="fb"><div class="model">Model answer: <b>'+esc(correct.text)+'</b></div>'+
+              (res ? '<div class="verdict '+(res==="right"?"ok":"bad")+'">Currently marked: '+
+                     (res==="right"?"got it":"missed it")+'</div>' : "")+
+              '<div class="nav"><button class="btn" data-mark="wrong">Missed it</button>'+
+              '<button class="btn primary" data-mark="right">Got it</button></div>'+
+              '</div>';
+    }
+  }
+
+  let fb = "";
+  if(res && st.mode === "mcq"){
+    fb = '<div class="fb"><div class="verdict '+(res==="right"?"ok":"bad")+'">'+
+         (res==="right" ? "\u2713 Correct" : "\u2717 Incorrect") +
+         ' &mdash; answer is '+q.answer+'</div>'+
+         '<div class="rat">'+esc(q.rationale)+'</div>'+
+         '<div class="src">'+esc(q.source)+'</div></div>';
+  } else if(res && st.mode === "typed"){
+    fb = '<div class="fb"><div class="rat">'+esc(q.rationale)+'</div>'+
+         '<div class="src">'+esc(q.source)+'</div></div>';
+  }
+
+  el("card").innerHTML = '<div class="badges">'+badges.join("")+'</div>'+
+    '<p class="qtext">'+esc(q.q)+'</p>'+body+fb;
+
+  el("prevBtn").disabled = st.idx === 0;
+  el("flagBtn").textContent = st.flagged.includes(q.id) ? "Unflag" : "Flag";
+  el("nextBtn").textContent = (st.idx === p.length-1) ? "Show summary" : "Next \u2192";
+  el("nextBtn").disabled = false;
+}
+
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+function answerMcq(letter){
+  const q = current(); if(!q || st.results[q.id]) return;
+  st.picks[q.id] = letter;
+  st.results[q.id] = (letter === q.answer) ? "right" : "wrong";
+  save(); render();
+}
+function mark(selfRight){
+  const q = current(); if(!q) return;
+  st.results[q.id] = selfRight ? "right" : "wrong";
+  save(); render();
+}
+function next(){
+  const p = pool();
+  if(st.idx >= p.length-1){ showSummary(); return; }
+  st.idx++; save(); render();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function showSummary(){
+  const byTopic = {};
+  QUESTIONS.forEach(q=>{
+    const r = st.results[q.id]; if(!r) return;
+    byTopic[q.topic] = byTopic[q.topic] || {right:0,total:0};
+    byTopic[q.topic].total++;
+    if(r==="right") byTopic[q.topic].right++;
+  });
+  const done = Object.keys(st.results).length;
+  const right = Object.values(st.results).filter(v=>v==="right").length;
+  let rows = Object.entries(byTopic).map(([t,v])=>
+    '<tr><td>'+esc(t)+'</td><td class="num">'+v.right+' / '+v.total+'</td>'+
+    '<td class="num">'+Math.round(v.right/v.total*100)+'%</td></tr>').join("");
+  el("summary").style.display = "block";
+  el("summary").innerHTML =
+    '<h2>Progress</h2>'+
+    '<div class="scorebig">'+(done?Math.round(right/done*100):0)+'%</div>'+
+    '<div class="scorable">'+right+' right of '+done+' answered &middot; '+QUESTIONS.length+' in the bank</div>'+
+    '<table style="margin-top:18px"><tr><th>Topic</th><th class="num">Score</th><th class="num">%</th></tr>'+rows+'</table>';
+  el("summary").scrollIntoView({behavior:"smooth"});
+}
+
+/* ---- wiring ---- */
+load();
+document.documentElement.setAttribute("data-theme", st.theme);
+el("themeBtn").textContent = st.theme === "dark" ? "\u263C" : "\u263E";
+
+[...new Set(QUESTIONS.map(q=>q.topic))].forEach(t=>{
+  const o = document.createElement("option"); o.value = t; o.textContent = t; el("topicSel").appendChild(o);
+});
+el("topicSel").value = st.topic;
+el("modeMcq").setAttribute("aria-pressed", st.mode==="mcq");
+el("modeTyped").setAttribute("aria-pressed", st.mode==="typed");
+
+el("themeBtn").onclick = () => {
+  st.theme = st.theme === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", st.theme);
+  el("themeBtn").textContent = st.theme === "dark" ? "\u263C" : "\u263E";
+  save();
+};
+el("modeMcq").onclick = () => { st.mode="mcq"; el("modeMcq").setAttribute("aria-pressed","true");
+  el("modeTyped").setAttribute("aria-pressed","false"); save(); render(); };
+el("modeTyped").onclick = () => { st.mode="typed"; el("modeTyped").setAttribute("aria-pressed","true");
+  el("modeMcq").setAttribute("aria-pressed","false"); save(); render(); };
+el("topicSel").onchange = e => { st.topic = e.target.value; st.retry = false; st.retryIds = [];
+  el("wrongBtn").textContent = "Retry wrong"; st.idx = 0; save(); render(); };
+el("shuffleBtn").onclick = () => { st.shuffled = !st.shuffled; st.idx = 0;
+  el("shuffleBtn").textContent = st.shuffled ? "Shuffled \u2713" : "Shuffle"; save(); render(); };
+el("shuffleBtn").textContent = st.shuffled ? "Shuffled \u2713" : "Shuffle";
+el("wrongBtn").onclick = () => {
+  if(st.retry){
+    st.retry = false; st.retryIds = []; st.idx = 0;
+    el("wrongBtn").textContent = "Retry wrong"; save(); render(); return;
+  }
+  const ids = QUESTIONS.filter(q => st.results[q.id] === "wrong").map(q => q.id);
+  if(!ids.length){ alert("No wrong answers recorded yet \u2014 answer some questions first."); return; }
+  st.retryIds = ids; st.retry = true; st.idx = 0;
+  ids.forEach(id => { delete st.results[id]; delete st.picks[id]; });
+  el("wrongBtn").textContent = "Retrying wrong \u2713 (" + ids.length + ")";
+  save(); render();
+};
+el("resetBtn").onclick = () => {
+  if(!confirm("Clear all answers, flags and progress?")) return;
+  st = { idx:0, mode:st.mode, topic:"", shuffled:false, results:{}, picks:{}, flagged:[], revealed:[], theme:st.theme, typed:{}, retryIds:[], retry:false };
+  el("topicSel").value = ""; el("shuffleBtn").textContent = "Shuffle";
+  el("wrongBtn").textContent = "Retry wrong";
+  el("summary").style.display = "none"; save(); render();
+};
+el("prevBtn").onclick = () => { if(st.idx>0){ st.idx--; save(); render(); window.scrollTo({top:0,behavior:"smooth"}); } };
+el("sumBtn").onclick = showSummary;
+el("nextBtn").onclick = next;
+el("flagBtn").onclick = () => {
+  const q = current(); const i = st.flagged.indexOf(q.id);
+  if(i>=0) st.flagged.splice(i,1); else st.flagged.push(q.id);
+  save(); render();
+};
+
+el("card").addEventListener("click", e => {
+  const opt = e.target.closest(".opt");
+  if(opt && !opt.disabled){ answerMcq(opt.dataset.letter); return; }
+  const mk = e.target.closest("[data-mark]");
+  if(mk){ mark(mk.dataset.mark === "right"); return; }
+  if(e.target.id === "revealBtn"){
+    const q = current();
+    st.typed[q.id] = (el("typedBox")||{}).value || "";
+    if(!st.revealed.includes(q.id)) st.revealed.push(q.id);
+    save(); render(); return;
+  }
+});
+el("card").addEventListener("input", e => {
+  if(e.target.id === "typedBox"){ const q = current(); st.typed[q.id] = e.target.value; save(); }
+});
+
+document.addEventListener("keydown", e => {
+  if(e.target.tagName === "TEXTAREA" || e.target.tagName === "SELECT") return;
+  const k = e.key.toUpperCase();
+  if(st.mode === "mcq" && "ABCD".includes(k) && k.length===1) { answerMcq(k); return; }
+  if(st.mode === "mcq" && "1234".includes(k)) { answerMcq(LETTERS[+k-1]); return; }
+  if(e.key === "Enter"){ e.preventDefault(); next(); return; }
+  if(k === "F"){ el("flagBtn").click(); }
+});
+
+render();
+</script>
+</body>
+</html>
