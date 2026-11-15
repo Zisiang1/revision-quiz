@@ -1,9 +1,10 @@
 # revision-quiz
 
-Two multiple-choice revision quizzes in a single self-contained page:
+Three multiple-choice revision quizzes in a single self-contained page:
 
 - **ICT2212 Quiz 1** - Ethical Hacking, weeks 1-5 (60 questions, 5 topics)
 - **INF2001 Quiz 1** - Intro to Software Engineering, weeks 1-5 (60 questions, 9 topics)
+- **INF2004 Quiz** - Embedded Systems, recall and code reading for the 16 Nov papers (36 questions, 14 topics)
 
 Switch quizzes with the tabs at the top. Each quiz keeps its own progress, score, flagged
 questions and topic filter.
