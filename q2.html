@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ICT2212 Quiz 2 — Full Drill</title>
+<style>
+:root{--bg:#0d1117;--card:#161b22;--line:#26303d;--ink:#e6edf3;--dim:#8b98a5;--acc:#4493f8;--ok:#3fb950;--bad:#f85149;--warn:#d29922}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:20px 18px 60px}
+h1{font-size:20px;margin:0 0 4px}
+.sub{color:var(--dim);font-size:13px;margin-bottom:16px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+button{font:inherit;font-size:13px;padding:7px 12px;border-radius:7px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--acc)}
+button.on{background:rgba(68,147,248,.15);border-color:var(--acc);color:#9dc4ff}
+button.go{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
+button:disabled{opacity:.45;cursor:default}
+.stats{display:flex;gap:16px;font-size:13px;color:var(--dim);margin:6px 0 14px;flex-wrap:wrap}
+.stats b{color:var(--ink)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 18px 14px}
+.tags{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.tag{font-size:11px;padding:2px 8px;border-radius:20px;border:1px solid var(--line);color:var(--dim)}
+.tag.t-msq{color:#d2a8ff;border-color:#3c2a55}
+.tag.t-desc{color:#7ee787;border-color:#20442b}
+.q{font-size:16.5px;line-height:1.5;margin:0 0 14px;white-space:pre-wrap}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:9px;margin-bottom:8px;cursor:pointer}
+.opt:hover{border-color:#3b4757}
+.opt.sel{border-color:var(--acc);background:rgba(68,147,248,.08)}
+.opt.right{border-color:var(--ok);background:rgba(63,185,80,.10)}
+.opt.wrong{border-color:var(--bad);background:rgba(248,81,73,.10)}
+.opt input{margin-top:4px;accent-color:var(--acc)}
+.opt .l{font-weight:700;color:var(--dim);min-width:14px}
+textarea{width:100%;min-height:90px;background:#0b1017;color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:10px;font:inherit;font-size:14px;resize:vertical}
+.fb{margin-top:12px;padding:11px 13px;border-radius:9px;font-size:14px;display:none;white-space:pre-wrap}
+.fb.show{display:block}
+.fb.ok{background:rgba(63,185,80,.10);border:1px solid #1f6f33}
+.fb.bad{background:rgba(248,81,73,.10);border:1px solid #7d2a26}
+.fb.model{background:rgba(126,231,135,.07);border:1px solid #20442b}
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:8px}
+.nav .mid{font-size:12px;color:var(--dim)}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+th{color:var(--dim);font-weight:600}
+.hide{display:none}
+kbd{background:#0b1017;border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:11px}
+</style></head><body><div class="wrap">
+<h1>ICT2212 Quiz 2 — full paper drill</h1>
+<div class="sub">Weeks 8–11 · MCQ, MSQ and descriptive · 19 Nov 2026, 11:00 · progress saved in this browser</div>
+
+<div class="bar" id="weeks"></div>
+<div class="bar" id="types"></div>
+<div class="bar">
+  <button id="shuffle">Shuffle</button>
+  <button id="wrong">Retry wrong</button>
+  <button id="summary">Summary</button>
+  <button id="reset">Reset</button>
+</div>
+<div class="stats" id="stats"></div>
+
+<div class="card">
+  <div class="tags" id="tags"></div>
+  <p class="q" id="qtext"></p>
+  <div id="opts"></div>
+  <div id="descbox" class="hide"><textarea id="ta" placeholder="Write your answer, then reveal the model answer."></textarea></div>
+  <div class="fb" id="fb"></div>
+  <div class="nav">
+    <button id="prev">← Prev</button>
+    <span class="mid" id="mid"></span>
+    <button id="next">Next →</button>
+  </div>
+  <div class="nav" style="margin-top:10px">
+    <button id="check" class="go">Check</button>
+    <button id="reveal" class="go hide">Show model answer</button>
+    <span class="mid" id="score"></span>
+  </div>
+</div>
+
+<div class="card hide" id="sumcard" style="margin-top:16px"><div id="sum"></div></div>
+
+<p class="sub" style="margin-top:16px">Keys: <kbd>1</kbd>–<kbd>4</kbd> pick · <kbd>Enter</kbd> check · <kbd>←</kbd>/<kbd>→</kbd> move</p>
+</div>
+<script>
+const QS = [{"w":"W8","t":"Wireless","type":"mcq","q":"The BSSID of a wireless network is:","o":["The human-readable network name","The MAC address of the AP's radio","The encryption key","The channel number"],"a":"B","why":"SSID is the name; BSSID is the AP radio's MAC, used to tell same-named APs apart."},{"w":"W8","t":"Wireless","type":"mcq","q":"Which frame does the access point send several times a second to announce the network?","o":["Probe request","Beacon","Association request","Deauthentication"],"a":"B","why":"Beacons are the AP's announcements; probes come from stations asking what is in range."},{"w":"W8","t":"Wireless","type":"mcq","q":"Why do evil twin attacks work?","o":["WPA2 encryption is weak","802.11 authentication is one-way: the client cannot authenticate the AP","Beacons are encrypted","MAC addresses cannot be spoofed"],"a":"B","why":"The AP proves nothing about itself, so a lookalike AP is accepted."},{"w":"W8","t":"Wireless","type":"mcq","q":"Monitor mode differs from promiscuous mode because monitor mode:","o":["Captures traffic only after joining the network","Captures all frames on a channel without associating","Decrypts WPA2 traffic","Requires the network password"],"a":"B","why":"Monitor mode is fully passive and unassociated; promiscuous mode captures traffic on a network the card already joined."},{"w":"W8","t":"Wireless","type":"mcq","q":"WEP failed primarily because of:","o":["Short passphrases","Keystream reuse caused by short IVs","Use of AES","Missing authentication"],"a":"B","why":"IV collisions let an attacker recover the keystream and then the key."},{"w":"W8","t":"Wireless","type":"mcq","q":"In WPA2-PSK, the attacker's realistic path to the passphrase is:","o":["Online guessing until lockout","Capturing the 4-way handshake and attacking it offline","Decrypting beacons","Spoofing the BSSID"],"a":"B","why":"The handshake gives a verifiable hash of the PSK; guessing offline is unlimited and undetectable."},{"w":"W8","t":"Wireless","type":"mcq","q":"KRACK targets:","o":["The WEP IV space","Key reinstallation in the 4-way handshake","Beacon frames","The SSID length limit"],"a":"B","why":"Blocking the final handshake message makes the client reinstall a key with a reused nonce."},{"w":"W8","t":"Wireless","type":"mcq","q":"Hiding the SSID does not hide the network because:","o":["Beacons are encrypted but readable","The name still appears in probe and association frames","The AP broadcasts it in ARP","Routers publish it to DNS"],"a":"B","why":"Clients probe for the name in the clear, so a sniffer sees it regardless."},{"w":"W8","t":"Wireless","type":"mcq","q":"MAC filtering is defeated by:","o":["Changing the channel","Spoofing an allowed MAC address","Using WPA3","Joining at a different time"],"a":"B","why":"MACs are sent in clear management frames and are trivial to clone."},{"w":"W8","t":"Wireless","type":"mcq","q":"Which standard replaced the 4-way handshake with SAE to stop offline guessing?","o":["WEP","WPA","WPA2","WPA3"],"a":"D","why":"SAE is a simultaneous authentication of equals, resistant to offline dictionary attack."},{"w":"W8","t":"Wireless","type":"msq","q":"Which statements about 802.11 management frames are true?","o":["Beacons are sent by the AP","Probe requests are sent by the client","Beacons are encrypted under WPA2","A sniffer reads SSIDs and MACs without any key"],"a":"ABD","why":"Management frames are unencrypted, so SSIDs and MACs are readable; data frames are what WPA2 protects."},{"w":"W8","t":"Wireless","type":"msq","q":"Which of these are wireless attacks or weaknesses?","o":["Evil twin access point","Deauthentication flood","WEP IV reuse","Stack buffer overflow"],"a":"ABC","why":"The first three are wireless-layer issues; a stack overflow is a memory bug, not a radio attack."},{"w":"W8","t":"Wireless","type":"msq","q":"Which controls actually improve wireless security?","o":["WPA3 or WPA2-Enterprise with 802.1X","A long random passphrase","Disabled WPS","Hidden SSID"],"a":"ABC","why":"Hiding the SSID is obscurity; the other three change who can authenticate or guess."},{"w":"W8","t":"Wireless","type":"desc","q":"Explain how an evil twin attack leads to credential theft, step by step.","model":"A rogue AP broadcasts the same SSID as the real network. Clients choose by signal strength, so the twin wins if it is closer. The client associates to the twin because 802.11 gives it no way to verify the AP. All traffic then passes through the attacker, who can serve a fake login page, read unencrypted pages, and rewrite DNS answers. Defence: WPA3/802.1X mutual authentication, plus user awareness that a portal asking for credentials is suspect."},{"w":"W8","t":"Wireless","type":"desc","q":"A café uses WPA2-PSK with a 10-character passphrase. Explain how an attacker recovers it and why the network cannot detect the attempt.","model":"The attacker deauthenticates a client so it rejoins, then captures the 4-way handshake. The handshake contains material that can be checked against candidate passphrases offline. Because the guessing happens on the attacker's own machine, there is no lockout, rate limit, or log entry on the target. The only real defence is passphrase entropy: a long random phrase defeats dictionaries."},{"w":"W9","t":"Web basics","type":"mcq","q":"`whatweb` is used to:","o":["Resolve DNS records","Identify technologies a site runs","Detect a WAF","Brute force directories"],"a":"B","why":"whatweb reports server, CMS and frameworks, which maps to known versions and exploits."},{"w":"W9","t":"Web basics","type":"mcq","q":"`wafw00f` tells you:","o":["Whether a web application firewall is present","The database version","Open ports","Who owns the domain"],"a":"A","why":"It probes for WAF signatures, telling you whether payloads will be filtered."},{"w":"W9","t":"Web basics","type":"mcq","q":"`robots.txt` is best described as:","o":["A security control","A public signpost to paths the owner wants ignored","An authentication file","An encrypted config file"],"a":"B","why":"It is readable by anyone and often lists exactly the interesting paths."},{"w":"W9","t":"Web basics","type":"mcq","q":"Which HTTP method carries form data in the URL rather than the body?","o":["POST","GET","PUT","PATCH"],"a":"B","why":"GET puts parameters in the query string, which makes them appear in logs, history and Referer headers."},{"w":"W9","t":"Web basics","type":"mcq","q":"In an HTTP response, the `Set-Cookie` header's job is to:","o":["Store data on the server","Instruct the browser to store a cookie","Encrypt the session","Log the user in"],"a":"B","why":"The server sets it; the browser then returns it in a `Cookie` header on later requests."},{"w":"W9","t":"Web basics","type":"mcq","q":"Burp Suite's Proxy is used to:","o":["Scan for SQL injection","Intercept and modify requests and responses","Crack hashes","Enumerate users"],"a":"B","why":"Interception defeats anything the browser enforced, because you edit the request before it is sent."},{"w":"W9","t":"Web basics","type":"mcq","q":"Client-side validation is not a security control because:","o":["It slows the page","It can be bypassed by sending the request directly","Browsers ignore it","It only works over HTTPS"],"a":"B","why":"The attacker controls the client, so only server-side checks matter."},{"w":"W9","t":"Web basics","type":"mcq","q":"A 302 status code means:","o":["Not found","Redirect","Server error","Unauthorised"],"a":"B","why":"302 is a temporary redirect; 200 is success, 404 missing, 500 server error."},{"w":"W9","t":"SQL injection","type":"mcq","q":"The root cause of SQL injection is:","o":["String concatenation of user input into a query","Weak passwords","Missing HTTPS","Unvalidated HTML"],"a":"A","why":"Input changes the query's structure instead of being treated as data."},{"w":"W9","t":"SQL injection","type":"mcq","q":"In `admin' -- `, the double dash:","o":["Escapes the quote","Comments out the rest of the query","Adds a new statement","Closes a bracket"],"a":"B","why":"Everything after -- is ignored, including the password check."},{"w":"W9","t":"SQL injection","type":"mcq","q":"`ORDER BY 8` errors while `ORDER BY 7` succeeds. What does that tell you?","o":["8 columns","7 columns","The DB is Oracle","The query is not injectable"],"a":"B","why":"You can sort by existing columns only, so 7 exist."},{"w":"W9","t":"SQL injection","type":"mcq","q":"A UNION-based injection requires that:","o":["The second query returns the same number of columns as the first","The database is MySQL","The user is admin","The site uses GET"],"a":"A","why":"Column counts must match, which is why you count columns first."},{"w":"W9","t":"SQL injection","type":"mcq","q":"`information_schema` matters because it:","o":["Stores user passwords","Describes every table and column in the database","Holds the web server config","Logs failed logins"],"a":"B","why":"It is the map an attacker reads before dumping data."},{"w":"W9","t":"SQL injection","type":"mcq","q":"Blind SQL injection relies on:","o":["Visible error messages","Inferring data from true/false responses or time delays","Reading the source code","Decrypting cookies"],"a":"B","why":"No output is returned, so the attacker asks yes/no questions."},{"w":"W9","t":"SQL injection","type":"mcq","q":"The definitive defence against SQL injection is:","o":["Escaping quotes","Prepared statements with bound parameters","Blocking the word SELECT","Hiding errors from users"],"a":"B","why":"Binding keeps input as data, so the query structure cannot change."},{"w":"W9","t":"SQL injection","type":"mcq","q":"A payload that returns every row of a table is:","o":["`1' OR '1'='1`","`1' AND '1'='2`","`1' ORDER BY 99`","`1' LIMIT 0`"],"a":"A","why":"The OR condition is true for every row, so all rows match."},{"w":"W9","t":"XSS","type":"mcq","q":"Which XSS type is stored on the server and served to every visitor?","o":["Reflected","Persistent (stored)","DOM-based","Self-XSS"],"a":"B","why":"The payload lives in the database, so every page load delivers it."},{"w":"W9","t":"XSS","type":"mcq","q":"DOM-based XSS is distinct because:","o":["The payload is stored in the database","The payload never reaches the server; client-side JS writes it into the page","It only works in Firefox","It needs an admin account"],"a":"B","why":"Server-side filters never see it, because the sink is in the browser."},{"w":"W9","t":"XSS","type":"mcq","q":"XSS executes in:","o":["The database","The victim's browser, in the vulnerable site's origin","The web server process","The firewall"],"a":"B","why":"That is why the target is the victim's session and browser actions."},{"w":"W9","t":"XSS","type":"mcq","q":"The primary defence against XSS is:","o":["Output encoding appropriate to the context","Input length limits","HTTPS","Disabling JavaScript"],"a":"A","why":"If input is rendered as text, it never becomes a script."},{"w":"W9","t":"XSS","type":"mcq","q":"`HttpOnly` on a session cookie:","o":["Prevents XSS","Stops JavaScript reading the cookie","Blocks CSRF","Encrypts the cookie"],"a":"B","why":"It caps the damage by blocking theft; the script still runs."},{"w":"W9","t":"XSS","type":"mcq","q":"Reflected XSS is delivered:","o":["In a stored comment","In a crafted link whose payload comes back in the response","Through DNS","By the database"],"a":"B","why":"The victim must click, which is why it is often used in phishing."},{"w":"W9","t":"XSS","type":"mcq","q":"A Content Security Policy reduces XSS impact by:","o":["Encrypting the page","Restricting where scripts may load from","Blocking SQL keywords","Rate-limiting requests"],"a":"B","why":"If inline and third-party scripts are blocked, many payloads cannot run."},{"w":"W9","t":"CSRF","type":"mcq","q":"CSRF succeeds because:","o":["The browser automatically attaches the victim's cookies to requests for that site","The attacker knows the password","Cookies are unencrypted","The server has no firewall"],"a":"A","why":"The server sees an authenticated request; only the intent is forged."},{"w":"W9","t":"CSRF","type":"mcq","q":"An attacker performing CSRF can:","o":["Read the response body","Trigger an action but not read the response","Steal the cookie","Decrypt the session"],"a":"B","why":"Same-origin policy blocks reading; CSRF changes state blindly."},{"w":"W9","t":"CSRF","type":"mcq","q":"The standard CSRF defence is:","o":["A per-session token embedded in forms and checked by the server","HttpOnly cookies","Output encoding","Disabling cookies"],"a":"A","why":"The attacker cannot read or guess the token, so their forged request lacks it."},{"w":"W9","t":"CSRF","type":"mcq","q":"`SameSite=Lax` on the session cookie:","o":["Sends the cookie on cross-site requests","Withholds the cookie on cross-site requests","Encrypts the cookie","Makes the cookie readable by JS"],"a":"B","why":"Without the session, the forged request is unauthenticated."},{"w":"W9","t":"CSRF","type":"mcq","q":"A state-changing `GET /setemail?new=x` is dangerous because:","o":["GET is cached","It can be triggered by an image tag with no form","It bypasses HTTPS","It returns a 404"],"a":"B","why":"`<img src=...>` fires automatically, so no interaction is needed."},{"w":"W9","t":"Web basics","type":"msq","q":"Which of these are effective server-side defences?","o":["Parameterised queries","Output encoding","A hidden form field the browser fills in","Server-side validation of every field"],"a":"ABD","why":"Hidden fields are attacker-controlled; only server-side enforcement counts."},{"w":"W9","t":"SQL injection","type":"msq","q":"Signs that a parameter may be SQL injectable include:","o":["A single quote produces a database error","Different responses for `AND 1=1` vs `AND 1=2`","`ORDER BY n` errors at a specific n","The page uses HTTPS"],"a":"ABC","why":"Error messages, boolean differences and ordering errors all indicate the input reaches the query."},{"w":"W9","t":"XSS","type":"msq","q":"Which measures limit XSS damage?","o":["Output encoding","HttpOnly cookies","Content Security Policy","Disabling client-side validation"],"a":"ABC","why":"Encoding stops execution; HttpOnly and CSP limit what a successful payload can do."},{"w":"W9","t":"CSRF","type":"msq","q":"Which controls defend against CSRF?","o":["Anti-CSRF token","SameSite cookies","Checking Origin/Referer","HttpOnly cookie"],"a":"ABC","why":"HttpOnly does not stop CSRF because the browser still sends the cookie automatically."},{"w":"W9","t":"XSS","type":"msq","q":"Which statements about the XSS types are correct?","o":["Stored payloads need no victim action beyond loading the page","Reflected payloads travel in the request and come back in the response","DOM-based payloads are executed by client-side JavaScript","All three are stopped by server-side input filtering alone"],"a":"ABC","why":"DOM-based XSS can occur entirely in the browser, so server-side filtering is not sufficient on its own."},{"w":"W9","t":"SQL injection","type":"desc","q":"Explain the three things happening in `admin' OR 1=1 --` and why the comment matters.","model":"`admin'` closes the string literal early, so what follows is parsed as SQL. `OR 1=1` is a condition that is true for every row. `--` comments out the remainder, which is usually the password comparison. Without the comment, operator precedence makes the trailing `AND password=...` still apply, so the login would fail; the comment is what removes that check."},{"w":"W9","t":"SQL injection","type":"desc","q":"Describe how you would confirm and exploit a UNION-based SQL injection.","model":"Send a quote and watch for a database error. Use `ORDER BY n` until it errors to find the column count. Then `UNION SELECT` with the same number of columns, placing markers to see which are displayed. Read the version, then enumerate `information_schema.tables` and `.columns`, then dump the credentials table. Defence: prepared statements."},{"w":"W9","t":"XSS","type":"desc","q":"Distinguish persistent, reflected and DOM-based XSS, and give the defence.","model":"Persistent: payload is stored server-side and served to every visitor. Reflected: payload is in the request and echoed in the response, requiring a crafted link. DOM-based: client-side JavaScript reads attacker input from the URL and writes it into the page, so the server never sees it. Defence is output encoding for the rendering context, plus CSP and HttpOnly as damage limits."},{"w":"W9","t":"CSRF","type":"desc","q":"Explain CSRF and why HttpOnly does not stop it.","model":"The attacker's page causes the victim's browser to send an authenticated request to another site; the browser attaches the session cookie automatically. The server cannot tell the request was not intended by the user. HttpOnly only prevents JavaScript from reading the cookie; the browser still sends it, which is all CSRF needs. Defence: anti-CSRF token, SameSite cookies, Origin checks."},{"w":"W10","t":"Memory layout","type":"mcq","q":"In a process's memory, the stack:","o":["Grows upward toward higher addresses","Grows downward toward lower addresses","Is allocated on disk","Is fixed at 4 GB"],"a":"B","why":"The stack grows down; the heap grows up toward it."},{"w":"W10","t":"Memory layout","type":"mcq","q":"Which region holds string literals and compiled instructions?","o":["Heap","Stack","Text (code) segment","BSS"],"a":"C","why":"Text is the executable code; string literals usually live in read-only data."},{"w":"W10","t":"Memory layout","type":"mcq","q":"Local variables of a function are stored:","o":["On the stack","In the text segment","On the heap","In the BSS"],"a":"A","why":"Each call allocates a frame on the stack for its locals and saved registers."},{"w":"W10","t":"Memory layout","type":"mcq","q":"When calling a function in the classic x86 convention, arguments are:","o":["Pushed left to right","Pushed right to left","Passed in registers only","Stored on the heap"],"a":"B","why":"Arguments are pushed in reverse order so the first argument is closest to the return address."},{"w":"W10","t":"Buffer overflow","type":"mcq","q":"`char buf[4]; gets(buf);` is dangerous because:","o":["gets is deprecated","gets performs no bounds check, so input longer than 4 bytes overflows","buf is not initialised","gets returns a pointer"],"a":"B","why":"It writes whatever it reads, past the end of the buffer."},{"w":"W10","t":"Buffer overflow","type":"mcq","q":"A stack buffer overflow that overwrites the saved return address allows:","o":["Reading the source code","Redirecting execution to an address the attacker chooses","Changing file permissions","Encrypting the stack"],"a":"B","why":"The `ret` instruction pops the attacker's value into EIP, so control flow moves."},{"w":"W10","t":"Buffer overflow","type":"mcq","q":"The classic overflow layout for a small buffer is:","o":["Filler, return address, saved EBP","Filler to fill the buffer, then saved EBP, then the return address","Return address, then buffer","Arguments, then buffer"],"a":"B","why":"You must pass through the buffer and the saved frame pointer to reach the return address."},{"w":"W10","t":"Buffer overflow","type":"mcq","q":"A stack canary detects overflow by:","o":["Encrypting the stack","Placing a known value before the return address and verifying it on return","Randomising the heap","Blocking gets at runtime"],"a":"B","why":"If the canary changed, the overflow happened and the process aborts."},{"w":"W10","t":"Buffer overflow","type":"mcq","q":"ASLR makes exploitation harder because:","o":["It marks the stack non-executable","It randomises memory addresses each run","It checks buffer lengths","It encrypts the return address"],"a":"B","why":"An attacker cannot reliably jump to a fixed address."},{"w":"W10","t":"Buffer overflow","type":"mcq","q":"NX / DEP:","o":["Prevents writing to the stack","Prevents executing code from the stack","Prevents reading the return address","Prevents stack growth"],"a":"B","why":"Injected shellcode cannot run if the memory region is not executable."},{"w":"W10","t":"Buffer overflow","type":"mcq","q":"The practical coding fix for buffer overflow is:","o":["Use bounded functions and check lengths","Disable the stack","Use larger buffers","Compile with optimisation"],"a":"A","why":"strncpy/snprintf/fgets plus explicit length checks remove the overwrite."},{"w":"W10","t":"Format strings","type":"mcq","q":"The format string vulnerability arises when:","o":["printf is used at all","User input is passed as the format string","The output is too long","Arguments are integers"],"a":"B","why":"The user can then supply specifiers that printf interprets as instructions."},{"w":"W10","t":"Format strings","type":"mcq","q":"`%x` in a format string attack:","o":["Writes to memory","Reads and prints stack values","Crashes the program reliably","Encrypts output"],"a":"B","why":"It leaks values, which can expose addresses and data."},{"w":"W10","t":"Format strings","type":"mcq","q":"`%n` is the dangerous specifier because it:","o":["Prints a number","Writes the number of characters printed to an attacker-chosen address","Reads a string","Skips output"],"a":"B","why":"That gives an arbitrary write, which enables code execution."},{"w":"W10","t":"Format strings","type":"mcq","q":"The fix for `printf(user_input)` is:","o":["`printf(user_input, \"%s\")`","`printf(\"%s\", user_input)`","`puts(user_input)` always","Strip all letters"],"a":"B","why":"The user's data becomes an argument, never the format."},{"w":"W10","t":"Format strings","type":"msq","q":"Which statements about stack layout are true?","o":["Arguments are pushed before the return address","The saved EBP sits between the locals and the return address","The stack grows toward lower addresses","Buffer overflows can overwrite the return address"],"a":"ABCD","why":"All four hold in the classic x86 layout, which is why a long copy reaches the return address."},{"w":"W10","t":"Format strings","type":"msq","q":"Which are mitigations for memory-safety bugs?","o":["Stack canaries","ASLR","Non-executable stack (NX/DEP)","Using gets() for speed"],"a":"ABC","why":"gets is the bug, not a mitigation."},{"w":"W10","t":"Format strings","type":"desc","q":"Explain how a stack buffer overflow leads to code execution, using the saved return address.","model":"A local buffer sits below the saved frame pointer and return address in the stack frame. A copy with no bounds check writes past the buffer into those saved values. When the function returns, `ret` pops the attacker's overwritten value into the instruction pointer, so execution continues wherever the attacker wrote. If the injected bytes are on an executable stack, that is shellcode; otherwise the attacker jumps to existing code. Mitigations: bounds checks, canaries, ASLR, NX."},{"w":"W10","t":"Format strings","type":"desc","q":"Explain the format string bug and how `%x`, `%s` and `%n` differ.","model":"If user input is used as the format string, the user provides the specifiers. `%x` prints the next value from the stack, leaking memory. `%s` treats a stack value as a pointer and prints the string at that address, allowing arbitrary reads. `%n` writes the count of characters printed so far to the address supplied, giving an arbitrary write and therefore possible code execution. The fix is a static format string with the data passed as an argument."},{"w":"W11","t":"Keeping access","type":"mcq","q":"A backdoor is:","o":["A firewall rule","An access path created to bypass normal authentication","A type of encryption","A log-cleaning tool"],"a":"B","why":"It exists so the attacker can return without repeating the original exploit."},{"w":"W11","t":"Keeping access","type":"mcq","q":"The `cd00r` backdoor is triggered by:","o":["A password prompt","A specially crafted SYN packet to a closed port","Opening a browser","A cron job"],"a":"B","why":"It sniffs traffic and opens a shell when the magic packet arrives, so no port is listening."},{"w":"W11","t":"Keeping access","type":"mcq","q":"Netcat (`nc`) is described as the Swiss army knife because it can:","o":["Only scan ports","Create connections, transfer files and provide a shell","Crack passwords","Hide files"],"a":"B","why":"`nc -l -p 4444 -e /bin/bash` gives a shell; it also moves files and probes ports."},{"w":"W11","t":"Keeping access","type":"mcq","q":"A Remote Access Trojan (RAT) differs from a backdoor primarily in:","o":["It is open source","It gives full remote control of the victim's desktop through a GUI-style client","It only logs keys","It cannot persist"],"a":"B","why":"RATs like ProRat or Quasar bundle file access, screen capture, keylogging and shell control."},{"w":"W11","t":"Keeping access","type":"mcq","q":"Weevely is a backdoor of which kind?","o":["Kernel rootkit","PHP web backdoor giving a remote shell through the web server","Hardware keylogger","Wireless implant"],"a":"B","why":"It is uploaded as a PHP file, so the web server's own permissions become the attacker's."},{"w":"W11","t":"Keeping access","type":"mcq","q":"A traditional rootkit works by:","o":["Encrypting files","Replacing system binaries such as ls, ps and ifconfig so they hide the attacker","Blocking the firewall","Flooding the network"],"a":"B","why":"The tools lie: file listings and process lists omit the attacker's artefacts."},{"w":"W11","t":"Keeping access","type":"mcq","q":"A kernel-level rootkit is harder to detect because:","o":["It loads as a kernel module and intercepts system calls","It only runs at boot","It uses strong encryption","It deletes itself immediately"],"a":"B","why":"It sits below the layer where userland tools and many scanners look."},{"w":"W11","t":"Keeping access","type":"mcq","q":"The most common purpose of a keylogger in this context is:","o":["Encrypting traffic","Capturing credentials and sensitive input","Scanning ports","Cleaning logs"],"a":"B","why":"It harvests passwords, card numbers and messages typed by the user."},{"w":"W11","t":"APT","type":"mcq","q":"An advanced persistent threat is best characterised as:","o":["A one-off bulk phishing campaign","A long-term, targeted intrusion that adapts to defences","A worm that spreads automatically","A DoS attack"],"a":"B","why":"Targeted, persistent and adaptive: the attacker stays, escalates and survives countermeasures."},{"w":"W11","t":"APT","type":"mcq","q":"Which phase typically starts an APT intrusion?","o":["Covering tracks","Intelligence gathering, then a targeted spear-phishing email","Port scanning the internet","Defacing a website"],"a":"B","why":"Reconnaissance identifies people and systems; the first access is usually a tailored email or document."},{"w":"W11","t":"APT","type":"mcq","q":"Spear phishing differs from ordinary phishing because it is:","o":["Sent to millions of addresses","Researched and tailored to a specific person or small group","Only sent over SMS","Always encrypted"],"a":"B","why":"Credibility comes from knowing the target's role, contacts and habits."},{"w":"W11","t":"APT","type":"mcq","q":"Quasar RAT is used in the course demo to show:","o":["Wireless deauthentication","Remote control of a victim host after phishing","SQL injection","Steganography"],"a":"B","why":"It is a Windows RAT configured and delivered as a payload."},{"w":"W11","t":"APT","type":"mcq","q":"DLL hijacking works because:","o":["Windows searches for a required DLL in predictable locations, and an attacker can plant one earlier in that order","DLLs are unencrypted","The DLL is unsigned","Antivirus ignores DLLs"],"a":"B","why":"A malicious DLL placed where the application looks first is loaded and executed."},{"w":"W11","t":"APT","type":"mcq","q":"Boundary protection alone is insufficient against APTs because:","o":["Firewalls block everything","APTs use legitimate channels and credentials, and defenders must also detect behaviour inside","Encryption is unbreakable","Antivirus is illegal"],"a":"B","why":"The course pairs boundary protection with agile defence and behavioural analysis."},{"w":"W11","t":"APT","type":"mcq","q":"Behavioural analysis detects APTs by:","o":["Matching file hashes only","Looking for anomalous activity rather than known signatures","Blocking all email attachments","Disabling USB ports"],"a":"B","why":"Novel malware has no signature, but its behaviour still differs from normal."},{"w":"W11","t":"Covering tracks","type":"mcq","q":"`attrib +s +a +h <folder>` on Windows:","o":["Encrypts the folder","Marks it system, archive and hidden","Deletes it","Shares it"],"a":"B","why":"Hidden and system attributes keep it out of normal Explorer views."},{"w":"W11","t":"Covering tracks","type":"mcq","q":"Steganography differs from encryption because it:","o":["Hides the existence of the message","Makes the message unreadable","Compresses the message","Signs the message"],"a":"B","why":"Encryption hides content; steganography hides that anything was hidden."},{"w":"W11","t":"Covering tracks","type":"mcq","q":"In LSB image steganography, data is hidden in:","o":["The image header","The least significant bit of colour components","The file extension","The EXIF timestamp only"],"a":"B","why":"Changing the low bit alters the colour imperceptibly to the eye."},{"w":"W11","t":"Covering tracks","type":"mcq","q":"Steganalysis is:","o":["The process of hiding data","The detection of hidden data in files","A type of encryption","A rootkit technique"],"a":"B","why":"Statistical analysis finds the distortion that hiding introduces."},{"w":"W11","t":"Covering tracks","type":"mcq","q":"A common way to make a file look undeletable is to:","o":["Change permissions and rename it","Encrypt it","Compress it","Move it to the desktop"],"a":"B","why":"Permission changes and odd names make removal awkward for a non-expert defender."},{"w":"W11","t":"Covering tracks","type":"mcq","q":"WinZapper is significant because it:","o":["Encrypts the event log","Selectively deletes entries from the Windows event log","Backs up logs","Blocks logging"],"a":"B","why":"Selective deletion can remove evidence without raising the 'log cleared' alarm."},{"w":"W11","t":"Covering tracks","type":"mcq","q":"Which artefacts should an attacker clear on a Windows host?","o":["Only cookies","History, temporary internet files and cookies","The registry entirely","Device drivers"],"a":"B","why":"Browsing artefacts reveal the sites and searches that led to the compromise."},{"w":"W11","t":"Covering tracks","type":"msq","q":"Which are backdoor or trojan examples from the lecture?","o":["Netcat shell listener","Weevely PHP backdoor","ProRat RAT","nmap SYN scan"],"a":"ABC","why":"nmap is a scanner, not a backdoor."},{"w":"W11","t":"Covering tracks","type":"msq","q":"Which are characteristics of an APT?","o":["Targeted at specific organisations or people","Persists over a long period","Adapts as defences change","Spreads by itself to random hosts"],"a":"ABC","why":"APTs are deliberate and human-driven; mass self-propagation is a worm trait."},{"w":"W11","t":"Covering tracks","type":"msq","q":"Which are legitimate defences against a rootkit?","o":["Booting from trusted media and comparing binaries","Kernel-level integrity checking","Relying on ps and ls output","Reinstalling from known-good media"],"a":"ABD","why":"A rootkit hides from the compromised OS, so its own tools cannot be trusted."},{"w":"W11","t":"Covering tracks","type":"msq","q":"Which items belong to 'covering tracks'?","o":["Clearing event logs","Deleting temporary internet files","Hiding files with attrib +h","Escalating privileges"],"a":"ABC","why":"Privilege escalation is part of gaining access, not cleanup."},{"w":"W11","t":"Covering tracks","type":"desc","q":"Explain what a rootkit is and why detection is hard.","model":"A rootkit is a set of tools that keeps the attacker's presence hidden from detection. A traditional rootkit replaces system binaries such as ls, ps and ifconfig so their output omits the attacker's files and processes. A kernel-level rootkit loads into the kernel and intercepts system calls, sitting below the layer where most userland checks operate. Detection therefore requires trusted tools: booting from external media, comparing binaries against known-good hashes, or kernel integrity checks."},{"w":"W11","t":"Covering tracks","type":"desc","q":"Describe covering tracks on a compromised Windows host and name the artefacts involved.","model":"Hide or rename files and folders (`attrib +s +a +h`), store data inside images using LSB steganography, and make files awkward to delete by changing permissions. Then clean logs: selectively remove entries with WinZapper to avoid the 'log cleared' event, and clear browser history, temporary internet files and cookies. The goal is to extend dwell time, not just to hide the initial compromise."},{"w":"W11","t":"APT","type":"desc","q":"Explain the APT attack cycle and why boundary protection alone fails.","model":"Intelligence gathering identifies targets and weaknesses; initial compromise usually arrives as a spear-phishing email or malicious document; the attacker establishes command and control, escalates, moves laterally, and exfiltrates over time, adapting to defences. Boundary protection is necessary but insufficient because the intrusion uses legitimate credentials, email and web traffic that must be allowed. Defence therefore adds agile protection, behavioural analysis and monitoring for anomalies."}];
+const KEY = "ict2212-q2-full-v1";
+let st = JSON.parse(localStorage.getItem(KEY) || '{"ans":{},"ok":{}}');
+const save = () => localStorage.setItem(KEY, JSON.stringify(st));
+const WEEKS = ["W8","W9","W10","W11"];
+const WNAME = {W8:"Week 8 · Wireless", W9:"Week 9 · Web", W10:"Week 10 · Binary", W11:"Week 11 · Access & APT"};
+let fw = "all", ft = "all", order = null, wrongOnly = false, i = 0;
+
+function pool(){
+  let p = QS.map((q,n)=>({q,n}));
+  if (fw !== "all") p = p.filter(x=>x.q.w===fw);
+  if (ft !== "all") p = p.filter(x=>x.q.type===ft);
+  if (wrongOnly) p = p.filter(x=>st.ans[x.n]!==undefined && !st.ok[x.n]);
+  if (order) p.sort((a,b)=>order.indexOf(a.n)-order.indexOf(b.n));
+  return p;
+}
+
+function renderFilters(){
+  document.getElementById('weeks').innerHTML =
+    [["all","All weeks"],...WEEKS.map(w=>[w,WNAME[w]])].map(([v,l])=>
+      `<button data-w="${v}" class="${fw===v?'on':''}">${l}</button>`).join("");
+  document.getElementById('types').innerHTML =
+    [["all","All types"],["mcq","MCQ"],["msq","MSQ"],["desc","Descriptive"]].map(([v,l])=>
+      `<button data-t="${v}" class="${ft===v?'on':''}">${l}</button>`).join("");
+  document.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>{fw=b.dataset.w;i=0;renderFilters();render();});
+  document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{ft=b.dataset.t;i=0;renderFilters();render();});
+}
+
+function stats(){
+  const a = Object.keys(st.ans).length, ok = Object.values(st.ok).filter(Boolean).length;
+  document.getElementById('stats').innerHTML =
+    `<span><b>${a}</b>/100 answered</span><span><b>${ok}</b> correct</span>`+
+    `<span><b>${a?Math.round(ok/a*100):0}%</b> accuracy</span><span>${QS.length} in bank</span>`;
+}
+
+function render(){
+  const p = pool(); if (!p.length) { document.getElementById('qtext').textContent = "Nothing in this filter."; return; }
+  if (i >= p.length) i = p.length-1;
+  const {q,n} = p[i];
+  const type = q.type;
+  document.getElementById('tags').innerHTML =
+    `<span class="tag">${WNAME[q.w]}</span><span class="tag">${q.t}</span>`+
+    `<span class="tag ${type==='msq'?'t-msq':type==='desc'?'t-desc':''}">${type.toUpperCase()}</span>`;
+  document.getElementById('qtext').textContent = q.q;
+  const opts = document.getElementById('opts'), fb = document.getElementById('fb');
+  fb.className='fb'; fb.textContent='';
+  const answered = st.ans[n] !== undefined;
+
+  if (type === 'desc') {
+    opts.innerHTML=''; document.getElementById('descbox').classList.remove('hide');
+    document.getElementById('check').classList.add('hide');
+    document.getElementById('reveal').classList.remove('hide');
+    document.getElementById('ta').value = st.ans[n] || '';
+    if (answered) {
+      fb.className='fb model show'; fb.textContent = "Model answer:\n" + q.model;
+    }
+  } else {
+    document.getElementById('descbox').classList.add('hide');
+    document.getElementById('check').classList.remove('hide');
+    document.getElementById('reveal').classList.add('hide');
+    const chosen = (st.ans[n] || "");
+    opts.innerHTML = q.o.map((t,k)=>{
+      const L="ABCD"[k];
+      const sel = chosen.includes(L);
+      let cls = "opt" + (sel?" sel":"");
+      if (answered) {
+        const right = q.a.includes(L);
+        if (right) cls += " right"; else if (sel) cls += " wrong";
+      }
+      const inputType = type==='msq' ? 'checkbox' : 'radio';
+      return `<label class="${cls}"><input type="${inputType}" name="o" value="${L}" ${sel?'checked':''} ${answered?'disabled':''}>
+        <span class="l">${L}</span><span>${t}</span></label>`;
+    }).join("");
+    opts.querySelectorAll('input').forEach(inp=>inp.onchange=()=>{
+      if (type==='msq') {
+        const cur = new Set((document.getElementById('opts').dataset.pick||"").split("").filter(Boolean));
+        inp.checked ? cur.add(inp.value) : cur.delete(inp.value);
+        document.getElementById('opts').dataset.pick = [...cur].sort().join("");
+      } else {
+        document.getElementById('opts').dataset.pick = inp.value;
+      }
+      opts.querySelectorAll('.opt').forEach(l=>l.classList.toggle('sel', l.querySelector('input').checked));
+    });
+    document.getElementById('opts').dataset.pick = type==='msq' ? [...chosen].sort().join("") : chosen;
+    if (answered) {
+      const good = st.ok[n];
+      fb.className = 'fb show ' + (good?'ok':'bad');
+      fb.textContent = (good?"Correct. ":"Not quite — answer is "+q.a+". ") + (q.why||"");
+    }
+  }
+  document.getElementById('mid').textContent = `${i+1} of ${p.length}`;
+  const done = Object.keys(st.ans).length;
+  document.getElementById('score').textContent = done ? `${Object.values(st.ok).filter(Boolean).length}/${done} correct` : "";
+  stats();
+}
+
+function check(){
+  const p = pool(); if(!p.length) return; const {q,n} = p[i];
+  if (q.type === 'desc') return;
+  const pick = document.getElementById('opts').dataset.pick || "";
+  if (!pick) return;
+  const good = pick.split("").sort().join("") === q.a.split("").sort().join("");
+  st.ans[n] = pick; st.ok[n] = good; save(); render();
+}
+
+document.getElementById('check').onclick = check;
+document.getElementById('reveal').onclick = ()=>{
+  const p=pool(); const {q,n}=p[i];
+  st.ans[n] = document.getElementById('ta').value || "(seen)"; st.ok[n]=false; save();
+  const fb=document.getElementById('fb');
+  fb.className='fb model show'; fb.textContent = "Model answer:\n"+q.model;
+  document.getElementById('score').textContent = "self-mark below";
+  const bar = document.querySelector('.nav:last-child');
+  if (!document.getElementById('selfok')) {
+    const d=document.createElement('span'); d.id='selfbox';
+    d.innerHTML=' <button id="selfok" class="go">I had this</button> <button id="selfno">I missed it</button>';
+    bar.appendChild(d);
+    document.getElementById('selfok').onclick=()=>{st.ok[n]=true;save();render();};
+    document.getElementById('selfno').onclick=()=>{st.ok[n]=false;save();render();};
+  }
+};
+document.getElementById('prev').onclick=()=>{i=Math.max(0,i-1);render();};
+document.getElementById('next').onclick=()=>{i=Math.min(pool().length-1,i+1);render();};
+document.getElementById('shuffle').onclick=()=>{order=QS.map((q,n)=>n).sort(()=>Math.random()-.5);wrongOnly=false;i=0;render();};
+document.getElementById('wrong').onclick=()=>{wrongOnly=!wrongOnly;i=0;document.getElementById('wrong').classList.toggle('on',wrongOnly);render();};
+document.getElementById('reset').onclick=()=>{if(confirm('Clear all progress?')){st={ans:{},ok:{}};save();wrongOnly=false;i=0;render();}};
+document.getElementById('summary').onclick=()=>{
+  const c=document.getElementById('sumcard'); c.classList.toggle('hide');
+  const rows = WEEKS.map(w=>{
+    const idx = QS.map((q,n)=>n).filter(n=>QS[n].w===w);
+    const a = idx.filter(n=>st.ans[n]!==undefined).length;
+    const ok = idx.filter(n=>st.ok[n]).length;
+    return `<tr><td>${WNAME[w]}</td><td>${ok} / ${a}</td><td>${idx.length}</td></tr>`;
+  }).join("");
+  const byType = ["mcq","msq","desc"].map(t=>{
+    const idx = QS.map((q,n)=>n).filter(n=>QS[n].type===t);
+    const ok = idx.filter(n=>st.ok[n]).length, a=idx.filter(n=>st.ans[n]!==undefined).length;
+    return `<tr><td>${t.toUpperCase()}</td><td>${ok} / ${a}</td><td>${idx.length}</td></tr>`;
+  }).join("");
+  document.getElementById('sum').innerHTML =
+    `<b>By week</b><table><tr><th>Week</th><th>Correct / answered</th><th>Total</th></tr>${rows}</table>
+     <b>By type</b><table><tr><th>Type</th><th>Correct / answered</th><th>Total</th></tr>${byType}</table>
+     <p class="sub">Missed: ${QS.map((q,n)=>st.ans[n]!==undefined&&!st.ok[n]?n+1:null).filter(Boolean).join(", ")||"none"}</p>`;
+};
+document.addEventListener('keydown',e=>{
+  const p=pool(); if(!p.length) return; const {q}=p[i];
+  if (e.key==='Enter'){ e.preventDefault(); check(); return; }
+  if (e.key==='ArrowRight'){ i=Math.min(p.length-1,i+1); render(); }
+  if (e.key==='ArrowLeft'){ i=Math.max(0,i-1); render(); }
+  if (q.type!=='desc' && ["1","2","3","4"].includes(e.key)) {
+    const k=+e.key-1; if (k>=q.o.length) return;
+    const L="ABCD"[k];
+    if (q.type==='msq'){
+      const cur=new Set((document.getElementById('opts').dataset.pick||"").split("").filter(Boolean));
+      cur.has(L)?cur.delete(L):cur.add(L);
+      document.getElementById('opts').dataset.pick=[...cur].sort().join("");
+    } else document.getElementById('opts').dataset.pick=L;
+    document.querySelectorAll('.opt').forEach((el,idx)=>el.classList.toggle('sel',(document.getElementById('opts').dataset.pick||"").includes("ABCD"[idx])));
+  }
+});
+renderFilters(); render();
+</script></body></html>
